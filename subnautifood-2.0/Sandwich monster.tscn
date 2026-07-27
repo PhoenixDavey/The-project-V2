@@ -1,8 +1,11 @@
-[gd_scene load_steps=9 format=3 uid="uid://cr8gdc61dra0y"]
+[gd_scene load_steps=12 format=3 uid="uid://cr8gdc61dra0y"]
 
+[ext_resource type="Script" uid="uid://blgkucurojag1" path="res://sandwich_monster.gd" id="1_dl6wx"]
 [ext_resource type="Texture2D" uid="uid://bfc1xdrocwhq2" path="res://Sandwich monster-1.png.png" id="1_ruiwe"]
 [ext_resource type="Texture2D" uid="uid://dkoeewxn6wj0u" path="res://Sandwich monster-2.png.png" id="2_j48ja"]
 [ext_resource type="Texture2D" uid="uid://dswto5nf7wtqe" path="res://Sandwich monster-3.png (1).png" id="2_ruiwe"]
+[ext_resource type="AudioStream" uid="uid://ctj38iapu2umm" path="res://monster_growl.wav" id="4_ahaqq"]
+[ext_resource type="AudioStream" uid="uid://dnvfcc5jd3hi7" path="res://monster_yell.wav" id="5_dl6wx"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ahaqq"]
 size = Vector2(120, 116)
@@ -20,6 +23,7 @@ radius = 786.87
 radius = 3635.09
 
 [node name="Sandwich monster" type="Node2D" groups=["sandwich"]]
+script = ExtResource("1_dl6wx")
 
 [node name="Front" type="Sprite2D" parent="."]
 position = Vector2(281, -15)
@@ -52,7 +56,6 @@ texture = ExtResource("2_ruiwe")
 
 [node name="Middle6" type="Sprite2D" parent="."]
 position = Vector2(-494, -13.5)
-scale = Vector2(1, 1)
 texture = ExtResource("2_ruiwe")
 
 [node name="Middle7" type="Sprite2D" parent="."]
@@ -135,6 +138,7 @@ position = Vector2(271, -23)
 shape = SubResource("CircleShape2D_j48ja")
 
 [node name="Growl" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("4_ahaqq")
 volume_db = -9.839
 pitch_scale = 0.58
 
@@ -146,6 +150,7 @@ visibility_layer = 0
 shape = SubResource("CircleShape2D_m0d8l")
 
 [node name="Yell" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("5_dl6wx")
 volume_db = 19.0
 
 [connection signal="body_exited" from="detect-area" to="." method="_on_detectarea_body_exited"]
