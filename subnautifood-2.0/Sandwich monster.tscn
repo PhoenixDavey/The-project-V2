@@ -1,12 +1,8 @@
-[gd_scene load_steps=13 format=3 uid="uid://cxcyinhoad8gj"]
+[gd_scene load_steps=9 format=3 uid="uid://cr8gdc61dra0y"]
 
-[ext_resource type="Script" uid="uid://dvyxljhjo78bl" path="res://sandwich_monster.gd" id="1_j48ja"]
-[ext_resource type="Texture2D" uid="uid://h264kfivlfci" path="res://Sandwich monster-1.png.png" id="1_ruiwe"]
-[ext_resource type="Texture2D" uid="uid://dfnino4ms5mmy" path="res://Sandwich monster-2.png.png" id="2_j48ja"]
-[ext_resource type="Texture2D" uid="uid://by3falqskwetq" path="res://Middle of smeel.jpg" id="3_ahaqq"]
-[ext_resource type="Script" uid="uid://cyf8melbwe854" path="res://detect_area.gd" id="5_ahaqq"]
-[ext_resource type="AudioStream" uid="uid://ctj38iapu2umm" path="res://monster_growl.wav" id="6_dl6wx"]
-[ext_resource type="AudioStream" uid="uid://dnvfcc5jd3hi7" path="res://monster_yell.wav" id="7_m0d8l"]
+[ext_resource type="Texture2D" uid="uid://bfc1xdrocwhq2" path="res://Sandwich monster-1.png.png" id="1_ruiwe"]
+[ext_resource type="Texture2D" uid="uid://dkoeewxn6wj0u" path="res://Sandwich monster-2.png.png" id="2_j48ja"]
+[ext_resource type="Texture2D" uid="uid://dswto5nf7wtqe" path="res://Sandwich monster-3.png (1).png" id="2_ruiwe"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_ahaqq"]
 size = Vector2(120, 116)
@@ -24,61 +20,60 @@ radius = 786.87
 radius = 3635.09
 
 [node name="Sandwich monster" type="Node2D" groups=["sandwich"]]
-script = ExtResource("1_j48ja")
 
 [node name="Front" type="Sprite2D" parent="."]
 position = Vector2(281, -15)
 texture = ExtResource("1_ruiwe")
 
 [node name="Middle1" type="Sprite2D" parent="."]
-position = Vector2(150.375, -18.75)
-scale = Vector2(0.145558, 0.144704)
-texture = ExtResource("3_ahaqq")
+position = Vector2(149.5, -19)
+scale = Vector2(1.00833, 0.991453)
+texture = ExtResource("2_ruiwe")
 
 [node name="Middle2" type="Sprite2D" parent="."]
-position = Vector2(22.875, -17.5)
-scale = Vector2(0.144358, 0.144089)
-texture = ExtResource("3_ahaqq")
+position = Vector2(21.5, -17.5)
+scale = Vector2(0.991667, 1)
+texture = ExtResource("2_ruiwe")
 
 [node name="Middle3" type="Sprite2D" parent="."]
-position = Vector2(-109, -17)
-scale = Vector2(0.146459, 0.147783)
-texture = ExtResource("3_ahaqq")
+position = Vector2(-107, -16)
+scale = Vector2(1, 0.991453)
+texture = ExtResource("2_ruiwe")
 
 [node name="Middle4" type="Sprite2D" parent="."]
-position = Vector2(-233, -17)
-scale = Vector2(0.144058, 0.14532)
-texture = ExtResource("3_ahaqq")
+position = Vector2(-233, -18)
+scale = Vector2(1, 0.991453)
+texture = ExtResource("2_ruiwe")
 
 [node name="Middle5" type="Sprite2D" parent="."]
-position = Vector2(-366, -18)
-scale = Vector2(0.144058, 0.14532)
-texture = ExtResource("3_ahaqq")
+position = Vector2(-367, -19)
+scale = Vector2(1, 1.00855)
+texture = ExtResource("2_ruiwe")
 
 [node name="Middle6" type="Sprite2D" parent="."]
-position = Vector2(-493.5, -13.5)
-scale = Vector2(0.145258, 0.144089)
-texture = ExtResource("3_ahaqq")
+position = Vector2(-494, -13.5)
+scale = Vector2(1, 1)
+texture = ExtResource("2_ruiwe")
 
 [node name="Middle7" type="Sprite2D" parent="."]
-position = Vector2(-630, -13.5)
-scale = Vector2(0.146459, 0.146552)
-texture = ExtResource("3_ahaqq")
+position = Vector2(-630, -14)
+scale = Vector2(0.999999, 0.991453)
+texture = ExtResource("2_ruiwe")
 
 [node name="Middle8" type="Sprite2D" parent="."]
-position = Vector2(-757, -12)
-scale = Vector2(0.144058, 0.142857)
-texture = ExtResource("3_ahaqq")
+position = Vector2(-756, -13)
+scale = Vector2(0.983333, 0.991453)
+texture = ExtResource("2_ruiwe")
 
 [node name="Middle9" type="Sprite2D" parent="."]
-position = Vector2(-895, -12.5)
-scale = Vector2(0.144058, 0.146552)
-texture = ExtResource("3_ahaqq")
+position = Vector2(-894.5, -12.5)
+scale = Vector2(0.991666, 1)
+texture = ExtResource("2_ruiwe")
 
 [node name="Middle10" type="Sprite2D" parent="."]
-position = Vector2(-1029, -10.5)
-scale = Vector2(0.146459, 0.144089)
-texture = ExtResource("3_ahaqq")
+position = Vector2(-1029, -11)
+scale = Vector2(0.983333, 0.991453)
+texture = ExtResource("2_ruiwe")
 
 [node name="Back" type="Sprite2D" parent="."]
 position = Vector2(-1197, -10)
@@ -133,7 +128,6 @@ shape = SubResource("RectangleShape2D_m0d8l")
 
 [node name="detect-area" type="Area2D" parent="."]
 visibility_layer = 0
-script = ExtResource("5_ahaqq")
 
 [node name="Detect-collision" type="CollisionShape2D" parent="detect-area" groups=["Detect"]]
 light_mask = 0
@@ -141,7 +135,6 @@ position = Vector2(271, -23)
 shape = SubResource("CircleShape2D_j48ja")
 
 [node name="Growl" type="AudioStreamPlayer2D" parent="."]
-stream = ExtResource("6_dl6wx")
 volume_db = -9.839
 pitch_scale = 0.58
 
@@ -153,7 +146,6 @@ visibility_layer = 0
 shape = SubResource("CircleShape2D_m0d8l")
 
 [node name="Yell" type="AudioStreamPlayer2D" parent="."]
-stream = ExtResource("7_m0d8l")
 volume_db = 19.0
 
 [connection signal="body_exited" from="detect-area" to="." method="_on_detectarea_body_exited"]

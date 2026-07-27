@@ -1,0 +1,71 @@
+[gd_scene load_steps=10 format=3 uid="uid://srqypi6khgnc"]
+
+[ext_resource type="Texture2D" uid="uid://h264kfivlfci" path="res://Sandwich monster-1.png.png" id="1_kpexm"]
+[ext_resource type="Texture2D" uid="uid://dnghgga0arv1d" path="res://Submarine for subnautifood.png" id="2_3xoar"]
+[ext_resource type="FontFile" uid="uid://bo60js2bqsidk" path="res://Another Danger Slanted - Demo.otf" id="3_mom7w"]
+
+[sub_resource type="Gradient" id="Gradient_7lgly"]
+offsets = PackedFloat32Array(0, 0.5, 1)
+colors = PackedColorArray(0, 0, 0.460912, 1, 0, 0, 1, 1, 0, 0, 0.431373, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_0824t"]
+gradient = SubResource("Gradient_7lgly")
+fill_from = Vector2(0, 1)
+fill_to = Vector2(0.995413, 0)
+
+[sub_resource type="Gradient" id="Gradient_nuqgq"]
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_lx2ly"]
+gradient = SubResource("Gradient_nuqgq")
+fill_to = Vector2(1, 1)
+
+[sub_resource type="Gradient" id="Gradient_jil77"]
+colors = PackedColorArray(1, 1, 1, 1, 0, 0, 0, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_16uvt"]
+gradient = SubResource("Gradient_jil77")
+fill = 1
+fill_from = Vector2(0.522936, 0.518349)
+fill_to = Vector2(0.857798, 0.178899)
+
+[node name="Node2D" type="Node2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(579, 329.5)
+scale = Vector2(23.3125, 13.9531)
+texture = SubResource("GradientTexture2D_0824t")
+
+[node name="SandwichMonster-1_png" type="Sprite2D" parent="."]
+position = Vector2(151, 115)
+rotation = 0.243186
+scale = Vector2(3.075, 2.69897)
+texture = ExtResource("1_kpexm")
+
+[node name="SubmarineForSubnautifood" type="Sprite2D" parent="."]
+position = Vector2(980, 551)
+scale = Vector2(0.697333, 0.632)
+texture = ExtResource("2_3xoar")
+
+[node name="CanvasModulate" type="CanvasModulate" parent="."]
+color = Color(0, 0, 0, 1)
+
+[node name="PointLight2D" type="PointLight2D" parent="."]
+position = Vector2(658, 386.5)
+scale = Vector2(21.4063, 12.8281)
+texture = SubResource("GradientTexture2D_lx2ly")
+
+[node name="PointLight2D2" type="PointLight2D" parent="."]
+position = Vector2(964, 538.5)
+scale = Vector2(10.9375, 7.85938)
+energy = 0.54
+texture = SubResource("GradientTexture2D_16uvt")
+
+[node name="Label" type="Label" parent="."]
+offset_left = 29.0
+offset_top = 488.0
+offset_right = 586.0
+offset_bottom = 710.0
+theme_override_colors/font_color = Color(0.623529, 0, 0, 1)
+theme_override_fonts/font = ExtResource("3_mom7w")
+theme_override_font_sizes/font_size = 100
+text = "Subnautifood"
