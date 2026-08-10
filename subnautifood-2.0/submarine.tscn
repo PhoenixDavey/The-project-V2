@@ -1,7 +1,141 @@
 [gd_scene load_steps=8 format=3 uid="uid://cx57um2cawr65"]
 
 [ext_resource type="Texture2D" uid="uid://bjh55vxx28vxl" path="res://Submarine for subnautifood.png" id="1_3uq8f"]
-[ext_resource type="Script" uid="uid://o3sdrpsr44he" path="res://submarine.gd" id="1_k4f85"]
+[ext_resource type="FontFile" uid="uid://bvynfl1ilckqa" path="res://Chernobyl.otf" id="2_k4f85"]
+[ext_resource type="Script" uid="uid://mgtc2h2y3ah0" path="res://repair_ui.gd" id="3_qvldv"]
+
+[sub_resource type="GDScript" id="GDScript_3uq8f"]
+script/source = "extends CharacterBody2D
+
+@export var max_speed: float = 300.0
+@export var acceleration: float = 150.0
+@export var friction: float = 200.0
+@export var boost_speed_multiplier: float = 3.0
+@export var boost_drain_rate: float = 1.0
+@export var boost_recharge_rate: float = 0.20
+@export var turn_speed: float = 2.5
+
+# Health
+@export var max_health: float = 100.0
+@export var collision_damage: float = 5.0
+@export var damage_cooldown: float = 0.5
+var health: float = 100.0
+var damage_timer: float = 0.0
+
+var boost_charge: float = 1.0
+var is_boosting: bool = false
+
+@export var pulse_speed: float = 3.0
+var pulse_time: float = 0.0
+
+@onready var boost_bar = $CanvasLayer/Boostbar
+@onready var health_bar = $CanvasLayer2/Health
+@onready var warning: Label = $Warning
+
+func _ready() -> void:
+	var dark = get_node(\"/root/Main/Dark\")
+	dark.color = Color(0.03, 0.08, 0.40, 1.0)
+	$PointLight2D.texture_scale = 2.0
+	$PointLight2D.color = Color(0.85, 0.95, 1.0)
+	$PointLight2D.energy = 1.2
+	$PointLight2D.blend_mode = PointLight2D.BLEND_MODE_ADD
+	$CPUParticles2D.emitting = true
+	$CPUParticles2D.amount = 8
+	$CPUParticles2D.lifetime = 2.0
+	$CPUParticles2D.explosiveness = 0.0
+	$CPUParticles2D.direction = Vector2(0, -1)
+	$CPUParticles2D.spread = 20.0
+	$CPUParticles2D.gravity = Vector2(0, -60)
+	$CPUParticles2D.initial_velocity_min = 20.0
+	$CPUParticles2D.initial_velocity_max = 60.0
+	$CPUParticles2D.scale_amount_min = 2.0
+	$CPUParticles2D.scale_amount_max = 7.0
+	$CPUParticles2D.color = Color(0.75, 0.93, 1.0, 0.6)
+
+	health_bar.max_value = max_health
+	health_bar.value = health
+
+func take_damage(amount: float) -> void:
+	health -= amount
+	health = max(health, 0.0)
+	health_bar.value = health
+	$Sprite2D.modulate = Color(1.0, 0.2, 0.2)
+	await get_tree().create_timer(0.1).timeout
+	$Sprite2D.modulate = Color(1.0, 1.0, 1.0)
+
+func _physics_process(delta: float) -> void:
+	pulse_time += delta * pulse_speed
+	$PointLight2D.energy = 1.0 + sin(pulse_time) * 0.15
+
+	# Health affects speed and boost
+	var health_ratio = health / max_health
+	var effective_max_speed = max_speed * (0.5 + 0.5 * health_ratio)
+	var effective_boost_multiplier = 1.0 + (boost_speed_multiplier - 1.0) * health_ratio
+
+	# Boost logic
+	is_boosting = Input.is_action_pressed(\"boost\") and boost_charge > 0.0
+
+	if is_boosting:
+		boost_charge -= boost_drain_rate * delta
+		boost_charge = max(boost_charge, 0.0)
+	else:
+		boost_charge += boost_recharge_rate * delta
+		boost_charge = min(boost_charge, 1.0)
+
+	# Update boost bar
+	boost_bar.max_value = 1.0
+	boost_bar.value = boost_charge
+	if is_boosting:
+		boost_bar.modulate = Color(0.2, 0.8, 1.0)
+	elif boost_charge < 1.0:
+		boost_bar.modulate = Color(0.8, 0.3, 0.3)
+	else:
+		boost_bar.modulate = Color(0.2, 0.8, 1.0)
+
+	# Movement
+	var current_max_speed = effective_max_speed * (effective_boost_multiplier if is_boosting else 1.0)
+
+	var direction = Vector2.ZERO
+	if Input.is_action_pressed(\"Ascending\"):
+		direction.y = -1
+	elif Input.is_action_pressed(\"Descending\"):
+		direction.y = 1
+	if Input.is_action_pressed(\"Left\"):
+		direction.x = -1
+	elif Input.is_action_pressed(\"Right\"):
+		direction.x = 1
+
+	if direction != Vector2.ZERO:
+		var target_angle = direction.angle() + PI
+		rotation = lerp_angle(rotation, target_angle, turn_speed * delta)
+
+		var r = fmod(rotation + PI * 2, PI * 2)
+		if r > PI / 2 and r < PI * 1.5:
+			$Sprite2D.flip_v = true
+		else:
+			$Sprite2D.flip_v = false
+
+		velocity = velocity.move_toward(direction * current_max_speed, acceleration * delta)
+	else:
+		velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
+
+	move_and_slide()
+
+	# Check collisions after move_and_slide — damage if hitting tilemap
+	if get_slide_collision_count() > 0:
+		damage_timer -= delta
+		if damage_timer <= 0.0:
+			take_damage(collision_damage)
+			damage_timer = damage_cooldown
+	else:
+		damage_timer = 0.0
+
+func show_warning():
+	warning.start_flash()
+
+func hide_warning():
+	warning.stop_flash()
+"
 
 [sub_resource type="Gradient" id="Gradient_qvldv"]
 colors = PackedColorArray(0.99558, 0.99558, 0.99558, 1, 0, 0, 0, 1)
@@ -10,20 +144,13 @@ colors = PackedColorArray(0.99558, 0.99558, 0.99558, 1, 0, 0, 0, 1)
 gradient = SubResource("Gradient_qvldv")
 fill = 1
 fill_from = Vector2(0.513761, 0.522936)
-fill_to = Vector2(0.183486, 0.0917431)
+fill_to = Vector2(0.183486, 0.100917)
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_k4f85"]
 radius = 174.04
 
-[sub_resource type="Gradient" id="Gradient_k4f85"]
-offsets = PackedFloat32Array(1)
-colors = PackedColorArray(0.86678, 0, 0.142409, 1)
-
-[sub_resource type="GradientTexture2D" id="GradientTexture2D_qvldv"]
-gradient = SubResource("Gradient_k4f85")
-
 [node name="Submarine" type="CharacterBody2D"]
-script = ExtResource("1_k4f85")
+script = SubResource("GDScript_3uq8f")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 position = Vector2(2, -1)
@@ -34,8 +161,8 @@ texture = ExtResource("1_3uq8f")
 polygon = PackedVector2Array(-9, -15, -11, -20, -12, -24, -12, -27, -14, -27, -15, -20, -16, -18, -16, -15, -32, -15, -37, -13, -41, -8, -41, 2, -37, 7, -35, 8, -20, 8, -16, 9, -13, 10, -18, 11, -18, 16, -11, 18, 2, 18, 6, 15, 6, 11, 2, 10, 6, 9, 11, 9, 19, 6, 22, 6, 23, 7, 25, 9, 30, 8, 33, 6, 37, 5, 40, 4, 41, 0, 40, -3, 38, -4, 40, -5, 41, -7, 41, -11, 36, -13, 31, -15, 25, -16, 23, -15, 21, -18, 21, -21, 20, -22, 19, -24, 17, -25, 15, -24, 15, -23, 15, -21, 14, -20, 13, -19, 13, -17, 10, -15, 3, -16, -8, -15)
 
 [node name="PointLight2D" type="PointLight2D" parent="."]
-position = Vector2(0.5, 0.999992)
-scale = Vector2(9.45313, 9.21875)
+position = Vector2(0.5, 1)
+scale = Vector2(5.01562, 5.4375)
 texture = SubResource("GradientTexture2D_wxksq")
 
 [node name="CPUParticles2D" type="CPUParticles2D" parent="."]
@@ -51,19 +178,66 @@ zoom = Vector2(0.6, 0.6)
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
 [node name="Boostbar" type="ProgressBar" parent="CanvasLayer"]
-offset_left = 883.0
-offset_top = 5.0
-offset_right = 1147.0
-offset_bottom = 32.0
+offset_left = 878.0
+offset_top = 55.0
+offset_right = 1142.0
+offset_bottom = 82.0
 theme_override_colors/font_color = Color(0.054902, 0, 0, 1)
 max_value = 1.0
 show_percentage = false
 
-[node name="Warning" type="Label" parent="."]
+[node name="CanvasLayer2" type="CanvasLayer" parent="."]
 
-[node name="Warning label" type="Sprite2D" parent="Warning"]
+[node name="Health" type="ProgressBar" parent="CanvasLayer2"]
+offset_left = 478.0
+offset_top = 54.0
+offset_right = 749.0
+offset_bottom = 81.0
+value = 100.0
+show_percentage = false
 
-[node name="Warning light" type="PointLight2D" parent="Warning"]
-position = Vector2(-692, -394)
-scale = Vector2(2.01562, 0.578125)
-texture = SubResource("GradientTexture2D_qvldv")
+[node name="Warning" type="Label" parent="CanvasLayer2"]
+offset_left = 518.0
+offset_top = -1.0
+offset_right = 1110.0
+offset_bottom = 63.0
+theme_override_colors/font_color = Color(0.486275, 0, 0, 1)
+theme_override_fonts/font = ExtResource("2_k4f85")
+theme_override_font_sizes/font_size = 60
+text = "HEALTH              BOOST"
+
+[node name="Warning label" type="Sprite2D" parent="CanvasLayer2/Warning"]
+
+[node name="RepairUI" type="Control" parent="CanvasLayer2"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("3_qvldv")
+
+[node name="Background" type="ColorRect" parent="CanvasLayer2/RepairUI"]
+offset_left = 1277.0
+offset_top = -342.0
+offset_right = 2462.0
+offset_bottom = 305.0
+color = Color(0.0110876, 0.0110876, 0.0110876, 1)
+
+[node name="Target" type="Button" parent="CanvasLayer2/RepairUI"]
+offset_right = 8.0
+offset_bottom = 8.0
+
+[node name="HitsLabel" type="Label" parent="CanvasLayer2/RepairUI"]
+offset_left = 12.0
+offset_top = 18.0
+offset_right = 171.0
+offset_bottom = 73.0
+theme_override_font_sizes/font_size = 40
+text = "Hits: 0/5"
+
+[node name="ExitButton" type="Button" parent="CanvasLayer2/RepairUI"]
+offset_left = 516.0
+offset_top = 604.0
+offset_right = 674.0
+offset_bottom = 640.0
+theme_override_font_sizes/font_size = 20
+text = "EXIT MINIGAME"

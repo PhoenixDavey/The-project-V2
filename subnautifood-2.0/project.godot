@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Subnautifood 2.0"
-run/main_scene="uid://srqypi6khgnc"
+run/main_scene="uid://b6hqhti0ei31t"
 config/features=PackedStringArray("4.4", "Forward Plus")
 config/icon="res://icon.svg"
 

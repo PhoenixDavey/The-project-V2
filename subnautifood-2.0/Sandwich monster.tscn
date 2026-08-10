@@ -20,7 +20,7 @@ size = Vector2(120, 116)
 radius = 786.87
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_m0d8l"]
-radius = 3635.09
+radius = 1646.0
 
 [node name="Sandwich monster" type="Node2D" groups=["sandwich"]]
 script = ExtResource("1_dl6wx")
@@ -134,6 +134,7 @@ visibility_layer = 0
 
 [node name="Detect-collision" type="CollisionShape2D" parent="detect-area" groups=["Detect"]]
 light_mask = 0
+visibility_layer = 0
 position = Vector2(271, -23)
 shape = SubResource("CircleShape2D_j48ja")
 

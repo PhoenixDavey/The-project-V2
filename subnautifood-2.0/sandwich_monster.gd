@@ -1,6 +1,6 @@
 extends Node2D
 # --- Exported settings ---
-@export var move_speed: float = 380.0
+@export var move_speed: float = 375.0
 @export var segment_follow_speed: float = 10.0
 @export var segment_spacing: float = 80.0
 @export var rotation_speed: float = 5.0
