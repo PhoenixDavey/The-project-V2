@@ -1,16 +1,17 @@
-[gd_scene load_steps=8 format=3 uid="uid://cx57um2cawr65"]
+[gd_scene load_steps=9 format=3 uid="uid://cx57um2cawr65"]
 
 [ext_resource type="Texture2D" uid="uid://bjh55vxx28vxl" path="res://Submarine for subnautifood.png" id="1_3uq8f"]
 [ext_resource type="FontFile" uid="uid://bvynfl1ilckqa" path="res://Chernobyl.otf" id="2_k4f85"]
 [ext_resource type="Script" uid="uid://mgtc2h2y3ah0" path="res://repair_ui.gd" id="3_qvldv"]
+[ext_resource type="Texture2D" uid="uid://ijm4ka2xk38s" path="res://images-removebg-preview (1).png" id="4_wxksq"]
 
 [sub_resource type="GDScript" id="GDScript_3uq8f"]
 script/source = "extends CharacterBody2D
 
 @export var max_speed: float = 300.0
 @export var acceleration: float = 150.0
-@export var friction: float = 200.0
-@export var boost_speed_multiplier: float = 3.0
+@export var friction: float = 300.0
+@export var boost_speed_multiplier: float = 2.5
 @export var boost_drain_rate: float = 1.0
 @export var boost_recharge_rate: float = 0.20
 @export var turn_speed: float = 2.5
@@ -22,8 +23,13 @@ script/source = "extends CharacterBody2D
 var health: float = 100.0
 var damage_timer: float = 0.0
 
+# Repair cooldown
+@export var repair_cooldown: float = 7.5
+var repair_cooldown_timer: float = 0.0
+
 var boost_charge: float = 1.0
 var is_boosting: bool = false
+var boost_locked: bool = false  # true once fully drained, until recharged
 
 @export var pulse_speed: float = 3.0
 var pulse_time: float = 0.0
@@ -31,10 +37,11 @@ var pulse_time: float = 0.0
 @onready var boost_bar = $CanvasLayer/Boostbar
 @onready var health_bar = $CanvasLayer2/Health
 @onready var warning: Label = $Warning
+@onready var repair_ui = $CanvasLayer2/RepairUI
 
 func _ready() -> void:
 	var dark = get_node(\"/root/Main/Dark\")
-	dark.color = Color(0.03, 0.08, 0.40, 1.0)
+	dark.color = Color(0.01, 0.05, 0.56, 1.0)
 	$PointLight2D.texture_scale = 2.0
 	$PointLight2D.color = Color(0.85, 0.95, 1.0)
 	$PointLight2D.energy = 1.2
@@ -63,17 +70,48 @@ func take_damage(amount: float) -> void:
 	await get_tree().create_timer(0.1).timeout
 	$Sprite2D.modulate = Color(1.0, 1.0, 1.0)
 
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed(\"repair\") and not repair_ui.visible and repair_cooldown_timer <= 0.0:
+		open_repair()
+
+func open_repair() -> void:
+	repair_ui.show()
+	repair_ui.start_minigame()
+
+func close_repair() -> void:
+	repair_ui.hide()
+	repair_cooldown_timer = repair_cooldown
+
+func apply_repair(percent: float) -> void:
+	health = min(health + max_health * (percent / 100.0), max_health)
+	health_bar.value = health
+
 func _physics_process(delta: float) -> void:
 	pulse_time += delta * pulse_speed
 	$PointLight2D.energy = 1.0 + sin(pulse_time) * 0.15
+
+	# Count down the repair cooldown regardless of what else is happening
+	if repair_cooldown_timer > 0.0:
+		repair_cooldown_timer = max(repair_cooldown_timer - delta, 0.0)
+
+	# No control input while repairing — you're off the wheel
+	if repair_ui.visible:
+		velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
+		move_and_slide()
+		return
 
 	# Health affects speed and boost
 	var health_ratio = health / max_health
 	var effective_max_speed = max_speed * (0.5 + 0.5 * health_ratio)
 	var effective_boost_multiplier = 1.0 + (boost_speed_multiplier - 1.0) * health_ratio
 
-	# Boost logic
-	is_boosting = Input.is_action_pressed(\"boost\") and boost_charge > 0.0
+	# Boost logic — once fully drained, boosting locks out until fully recharged
+	if boost_charge <= 0.0:
+		boost_locked = true
+	elif boost_charge >= 1.0:
+		boost_locked = false
+
+	is_boosting = Input.is_action_pressed(\"boost\") and boost_charge > 0.0 and not boost_locked
 
 	if is_boosting:
 		boost_charge -= boost_drain_rate * delta
@@ -138,13 +176,14 @@ func hide_warning():
 "
 
 [sub_resource type="Gradient" id="Gradient_qvldv"]
+offsets = PackedFloat32Array(0.707792, 1)
 colors = PackedColorArray(0.99558, 0.99558, 0.99558, 1, 0, 0, 0, 1)
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_wxksq"]
 gradient = SubResource("Gradient_qvldv")
 fill = 1
 fill_from = Vector2(0.513761, 0.522936)
-fill_to = Vector2(0.183486, 0.100917)
+fill_to = Vector2(0.197248, 0.123853)
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_k4f85"]
 radius = 174.04
@@ -178,10 +217,10 @@ zoom = Vector2(0.6, 0.6)
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
 [node name="Boostbar" type="ProgressBar" parent="CanvasLayer"]
-offset_left = 878.0
+offset_left = 924.0
 offset_top = 55.0
-offset_right = 1142.0
-offset_bottom = 82.0
+offset_right = 1141.0
+offset_bottom = 78.0
 theme_override_colors/font_color = Color(0.054902, 0, 0, 1)
 max_value = 1.0
 show_percentage = false
@@ -189,22 +228,25 @@ show_percentage = false
 [node name="CanvasLayer2" type="CanvasLayer" parent="."]
 
 [node name="Health" type="ProgressBar" parent="CanvasLayer2"]
-offset_left = 478.0
-offset_top = 54.0
-offset_right = 749.0
-offset_bottom = 81.0
+modulate = Color(0, 0.963312, 0, 1)
+offset_left = 6.0
+offset_top = 57.0
+offset_right = 225.0
+offset_bottom = 83.0
+theme_override_colors/font_color = Color(0, 0.643137, 0, 1)
+theme_override_colors/font_outline_color = Color(0, 0.784314, 0, 1)
 value = 100.0
 show_percentage = false
 
 [node name="Warning" type="Label" parent="CanvasLayer2"]
-offset_left = 518.0
-offset_top = -1.0
-offset_right = 1110.0
-offset_bottom = 63.0
-theme_override_colors/font_color = Color(0.486275, 0, 0, 1)
+offset_left = 9.0
+offset_top = 9.0
+offset_right = 1140.0
+offset_bottom = 60.0
+theme_override_colors/font_color = Color(0.556863, 0, 0, 1)
 theme_override_fonts/font = ExtResource("2_k4f85")
-theme_override_font_sizes/font_size = 60
-text = "HEALTH              BOOST"
+theme_override_font_sizes/font_size = 48
+text = "HEALTH                                                                      BOOST"
 
 [node name="Warning label" type="Sprite2D" parent="CanvasLayer2/Warning"]
 
@@ -215,26 +257,29 @@ offset_right = 40.0
 offset_bottom = 40.0
 script = ExtResource("3_qvldv")
 
-[node name="Background" type="ColorRect" parent="CanvasLayer2/RepairUI"]
-offset_left = 1277.0
-offset_top = -342.0
-offset_right = 2462.0
-offset_bottom = 305.0
-color = Color(0.0110876, 0.0110876, 0.0110876, 1)
-
 [node name="Target" type="Button" parent="CanvasLayer2/RepairUI"]
-offset_right = 8.0
-offset_bottom = 8.0
+layout_mode = 0
+offset_left = 965.0
+offset_top = 371.0
+offset_right = 1098.0
+offset_bottom = 424.0
+theme_override_colors/font_hover_pressed_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
+theme_override_colors/font_color = Color(0.796078, 0.658824, 0.00784314, 1)
+theme_override_fonts/font = ExtResource("2_k4f85")
+theme_override_font_sizes/font_size = 28
+text = "REPAIR"
+flat = true
 
-[node name="HitsLabel" type="Label" parent="CanvasLayer2/RepairUI"]
-offset_left = 12.0
-offset_top = 18.0
-offset_right = 171.0
-offset_bottom = 73.0
-theme_override_font_sizes/font_size = 40
-text = "Hits: 0/5"
+[node name="Wrench" type="Sprite2D" parent="CanvasLayer2/RepairUI/Target"]
+show_behind_parent = true
+position = Vector2(50, 35)
+rotation = -0.601529
+scale = Vector2(0.452883, 0.539506)
+texture = ExtResource("4_wxksq")
 
 [node name="ExitButton" type="Button" parent="CanvasLayer2/RepairUI"]
+layout_mode = 0
 offset_left = 516.0
 offset_top = 604.0
 offset_right = 674.0
