@@ -64,6 +64,7 @@ func take_damage(amount: float) -> void:
 	$Sprite2D.modulate = Color(1.0, 1.0, 1.0)
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed(\"repair\") and not repair_ui.visible and repair_cooldown_timer <= 0.0:
 		open_repair()
@@ -84,10 +85,13 @@ func apply_repair(percent: float) -> void:
 
 =======
 >>>>>>> parent of 38971be (v2.2)
+=======
+>>>>>>> parent of 38971be (v2.2)
 func _physics_process(delta: float) -> void:
 	pulse_time += delta * pulse_speed
 	$PointLight2D.energy = 1.0 + sin(pulse_time) * 0.15
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 	# Count down the repair cooldown regardless of what else is happening
 	if repair_cooldown_timer > 0.0:
@@ -101,6 +105,8 @@ func _physics_process(delta: float) -> void:
 		move_and_slide()
 		return
 
+=======
+>>>>>>> parent of 38971be (v2.2)
 =======
 >>>>>>> parent of 38971be (v2.2)
 	# Health affects speed and boost

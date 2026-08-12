@@ -3,9 +3,15 @@ extends Control
 signal repair_done(amount)
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 @export var target_lifetime: float = 0.65         # seconds before target expires/moves
 @export var repair_percent_per_hit: float = 2.5   # % of max health per hit
 @export var target_click_size: Vector2 = Vector2(70, 70)  # forced click-area size
+=======
+@export var targets_to_hit: int = 5       # hits needed to fully repair
+@export var target_lifetime: float = 1.5  # seconds before target moves
+@export var repair_per_hit: float = 25.0
+>>>>>>> parent of 38971be (v2.2)
 =======
 @export var targets_to_hit: int = 5       # hits needed to fully repair
 @export var target_lifetime: float = 1.5  # seconds before target moves
