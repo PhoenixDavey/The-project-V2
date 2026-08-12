@@ -10,8 +10,8 @@ script/source = "extends CharacterBody2D
 
 @export var max_speed: float = 300.0
 @export var acceleration: float = 150.0
-@export var friction: float = 300.0
-@export var boost_speed_multiplier: float = 2.5
+@export var friction: float = 200.0
+@export var boost_speed_multiplier: float = 3.0
 @export var boost_drain_rate: float = 1.0
 @export var boost_recharge_rate: float = 0.20
 @export var turn_speed: float = 2.5
@@ -41,7 +41,7 @@ var pulse_time: float = 0.0
 
 func _ready() -> void:
 	var dark = get_node(\"/root/Main/Dark\")
-	dark.color = Color(0.01, 0.05, 0.56, 1.0)
+	dark.color = Color(0.03, 0.08, 0.40, 1.0)
 	$PointLight2D.texture_scale = 2.0
 	$PointLight2D.color = Color(0.85, 0.95, 1.0)
 	$PointLight2D.energy = 1.2
@@ -77,10 +77,12 @@ func _unhandled_input(event: InputEvent) -> void:
 func open_repair() -> void:
 	repair_ui.show()
 	repair_ui.start_minigame()
+	Engine.time_scale = 0.25
 
 func close_repair() -> void:
 	repair_ui.hide()
 	repair_cooldown_timer = repair_cooldown
+	Engine.time_scale = 1.0
 
 func apply_repair(percent: float) -> void:
 	health = min(health + max_health * (percent / 100.0), max_health)
@@ -94,7 +96,9 @@ func _physics_process(delta: float) -> void:
 	if repair_cooldown_timer > 0.0:
 		repair_cooldown_timer = max(repair_cooldown_timer - delta, 0.0)
 
-	# No control input while repairing — you're off the wheel
+	# No control input while repairing — you're off the wheel.
+	# Engine.time_scale (set in open_repair/close_repair) handles the
+	# slow-motion feel globally, so this just needs to stop the sub.
 	if repair_ui.visible:
 		velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
 		move_and_slide()

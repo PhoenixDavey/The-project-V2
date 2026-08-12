@@ -93,7 +93,11 @@ func _update_label() -> void:
 func _process(delta: float) -> void:
 	if not active:
 		return
-	target_timer -= delta
+	# Engine.time_scale slows the whole world for the bullet-time effect,
+	# but the minigame itself should still feel fast/real-time to the
+	# player, so we undo that scaling here.
+	var real_delta = delta / max(Engine.time_scale, 0.0001)
+	target_timer -= real_delta
 	if target_timer <= 0.0:
 		# Too slow — target jumps to a new spot immediately
 		move_target()
