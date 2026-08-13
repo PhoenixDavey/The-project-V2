@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://cx57um2cawr65"]
+[gd_scene load_steps=11 format=3 uid="uid://cx57um2cawr65"]
 
 [ext_resource type="Texture2D" uid="uid://bjh55vxx28vxl" path="res://Submarine for subnautifood.png" id="1_3uq8f"]
 [ext_resource type="FontFile" uid="uid://bvynfl1ilckqa" path="res://Chernobyl.otf" id="2_k4f85"]
@@ -29,7 +29,7 @@ var repair_cooldown_timer: float = 0.0
 
 var boost_charge: float = 1.0
 var is_boosting: bool = false
-var boost_locked: bool = false  # true once fully drained, until recharged
+var boost_locked: bool = false
 
 @export var pulse_speed: float = 3.0
 var pulse_time: float = 0.0
@@ -60,12 +60,19 @@ func _ready() -> void:
 	$CPUParticles2D.color = Color(0.75, 0.93, 1.0, 0.6)
 
 	health_bar.max_value = max_health
+	update_health_bar()
+
+func update_health_bar() -> void:
 	health_bar.value = health
+	var health_ratio = health / max_health
+	var fill = health_bar.get_theme_stylebox(\"fill\") as StyleBoxFlat
+	if fill:
+		fill.bg_color = Color(1.0 - health_ratio, health_ratio * 0.55, 0.0)
 
 func take_damage(amount: float) -> void:
 	health -= amount
 	health = max(health, 0.0)
-	health_bar.value = health
+	update_health_bar()
 	$Sprite2D.modulate = Color(1.0, 0.2, 0.2)
 	await get_tree().create_timer(0.1).timeout
 	$Sprite2D.modulate = Color(1.0, 1.0, 1.0)
@@ -86,19 +93,15 @@ func close_repair() -> void:
 
 func apply_repair(percent: float) -> void:
 	health = min(health + max_health * (percent / 100.0), max_health)
-	health_bar.value = health
+	update_health_bar()
 
 func _physics_process(delta: float) -> void:
 	pulse_time += delta * pulse_speed
 	$PointLight2D.energy = 1.0 + sin(pulse_time) * 0.15
 
-	# Count down the repair cooldown regardless of what else is happening
 	if repair_cooldown_timer > 0.0:
 		repair_cooldown_timer = max(repair_cooldown_timer - delta, 0.0)
 
-	# No control input while repairing — you're off the wheel.
-	# Engine.time_scale (set in open_repair/close_repair) handles the
-	# slow-motion feel globally, so this just needs to stop the sub.
 	if repair_ui.visible:
 		velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
 		move_and_slide()
@@ -109,7 +112,7 @@ func _physics_process(delta: float) -> void:
 	var effective_max_speed = max_speed * (0.5 + 0.5 * health_ratio)
 	var effective_boost_multiplier = 1.0 + (boost_speed_multiplier - 1.0) * health_ratio
 
-	# Boost logic — once fully drained, boosting locks out until fully recharged
+	# Boost logic
 	if boost_charge <= 0.0:
 		boost_locked = true
 	elif boost_charge >= 1.0:
@@ -124,7 +127,7 @@ func _physics_process(delta: float) -> void:
 		boost_charge += boost_recharge_rate * delta
 		boost_charge = min(boost_charge, 1.0)
 
-	# Update boost bar
+	# Boost bar — blue when ready/boosting, red when drained/recharging
 	boost_bar.max_value = 1.0
 	boost_bar.value = boost_charge
 	if is_boosting:
@@ -163,7 +166,6 @@ func _physics_process(delta: float) -> void:
 
 	move_and_slide()
 
-	# Check collisions after move_and_slide — damage if hitting tilemap
 	if get_slide_collision_count() > 0:
 		damage_timer -= delta
 		if damage_timer <= 0.0:
@@ -191,6 +193,32 @@ fill_to = Vector2(0.197248, 0.123853)
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_k4f85"]
 radius = 174.04
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_wxksq"]
+bg_color = Color(0.184314, 0.635294, 1, 0.580392)
+border_width_left = 10
+border_width_top = 10
+border_width_right = 10
+border_width_bottom = 10
+border_color = Color(0, 0, 0.717647, 0.611765)
+border_blend = true
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_a2b0v"]
+bg_color = Color(0.211765, 0.788235, 0.290196, 0.647059)
+border_width_left = 10
+border_width_top = 10
+border_width_right = 10
+border_width_bottom = 10
+border_color = Color(7.18953e-07, 0.256169, 4.81308e-08, 0.701961)
+border_blend = true
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
 
 [node name="Submarine" type="CharacterBody2D"]
 script = SubResource("GDScript_3uq8f")
@@ -226,33 +254,43 @@ offset_top = 55.0
 offset_right = 1141.0
 offset_bottom = 78.0
 theme_override_colors/font_color = Color(0.054902, 0, 0, 1)
+theme_override_styles/fill = SubResource("StyleBoxFlat_wxksq")
 max_value = 1.0
 show_percentage = false
 
 [node name="CanvasLayer2" type="CanvasLayer" parent="."]
 
 [node name="Health" type="ProgressBar" parent="CanvasLayer2"]
-modulate = Color(0, 0.963312, 0, 1)
+modulate = Color(0, 0.667499, 0, 1)
 offset_left = 6.0
 offset_top = 57.0
 offset_right = 225.0
 offset_bottom = 83.0
 theme_override_colors/font_color = Color(0, 0.643137, 0, 1)
 theme_override_colors/font_outline_color = Color(0, 0.784314, 0, 1)
+theme_override_styles/fill = SubResource("StyleBoxFlat_a2b0v")
 value = 100.0
 show_percentage = false
 
-[node name="Warning" type="Label" parent="CanvasLayer2"]
-offset_left = 9.0
-offset_top = 9.0
-offset_right = 1140.0
-offset_bottom = 60.0
-theme_override_colors/font_color = Color(0.556863, 0, 0, 1)
+[node name="Boost" type="Label" parent="CanvasLayer2"]
+offset_left = 1009.0
+offset_top = 10.0
+offset_right = 1142.0
+offset_bottom = 61.0
+theme_override_colors/font_color = Color(0, 0.388235, 1, 1)
 theme_override_fonts/font = ExtResource("2_k4f85")
 theme_override_font_sizes/font_size = 48
-text = "HEALTH                                                                      BOOST"
+text = "BOOST"
 
-[node name="Warning label" type="Sprite2D" parent="CanvasLayer2/Warning"]
+[node name="Health_" type="Label" parent="CanvasLayer2"]
+offset_left = 9.0
+offset_top = 9.0
+offset_right = 176.0
+offset_bottom = 60.0
+theme_override_colors/font_color = Color(0.603922, 0, 0, 1)
+theme_override_fonts/font = ExtResource("2_k4f85")
+theme_override_font_sizes/font_size = 48
+text = "HEALTH"
 
 [node name="RepairUI" type="Control" parent="CanvasLayer2"]
 layout_mode = 3
@@ -267,8 +305,8 @@ offset_left = 965.0
 offset_top = 371.0
 offset_right = 1098.0
 offset_bottom = 424.0
-theme_override_colors/font_hover_pressed_color = Color(0, 0, 0, 1)
-theme_override_colors/font_hover_color = Color(0, 0, 0, 1)
+theme_override_colors/font_hover_pressed_color = Color(1, 1, 1, 1)
+theme_override_colors/font_hover_color = Color(1, 1, 1, 1)
 theme_override_colors/font_color = Color(0.796078, 0.658824, 0.00784314, 1)
 theme_override_fonts/font = ExtResource("2_k4f85")
 theme_override_font_sizes/font_size = 28
@@ -284,9 +322,13 @@ texture = ExtResource("4_wxksq")
 
 [node name="ExitButton" type="Button" parent="CanvasLayer2/RepairUI"]
 layout_mode = 0
-offset_left = 516.0
-offset_top = 604.0
-offset_right = 674.0
-offset_bottom = 640.0
-theme_override_font_sizes/font_size = 20
+offset_left = 479.0
+offset_top = 586.0
+offset_right = 719.0
+offset_bottom = 663.0
+theme_override_colors/font_hover_color = Color(0.262932, 0.262932, 0.262932, 1)
+theme_override_colors/font_color = Color(0.739789, 1.93726e-06, 9.62615e-07, 1)
+theme_override_fonts/font = ExtResource("2_k4f85")
+theme_override_font_sizes/font_size = 35
 text = "EXIT MINIGAME"
+flat = true
