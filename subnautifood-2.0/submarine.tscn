@@ -244,7 +244,7 @@ texture = SubResource("GradientTexture2D_wxksq")
 shape = SubResource("CircleShape2D_k4f85")
 
 [node name="Camera2D" type="Camera2D" parent="."]
-zoom = Vector2(0.6, 0.6)
+zoom = Vector2(0.17, 0.17)
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
