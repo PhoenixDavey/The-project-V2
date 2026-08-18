@@ -4,6 +4,7 @@ signal repair_done(amount)
 
 @export var target_lifetime: float = 0.65         # seconds before target expires/moves
 @export var repair_percent_per_hit: float = 5.0   # % of max health per hit
+@export var max_wrenches: int = 10                # max hits allowed per repair session
 @export var target_click_size: Vector2 = Vector2(70, 70)  # forced click-area size
 
 var hits: int = 0
@@ -80,7 +81,10 @@ func _on_target_clicked(_event: InputEvent) -> void:
 		hits += 1
 		_update_label()
 		_apply_hit_repair()
-		move_target()
+		if hits >= max_wrenches:
+			finish_minigame()
+		else:
+			move_target()
 
 func _apply_hit_repair() -> void:
 	get_parent().get_parent().apply_repair(repair_percent_per_hit)
@@ -88,7 +92,7 @@ func _apply_hit_repair() -> void:
 
 func _update_label() -> void:
 	if hits_label:
-		hits_label.text = "Hits: %d" % hits
+		hits_label.text = "%d/%d" % [hits, max_wrenches]
 
 func _process(delta: float) -> void:
 	if not active:
@@ -101,6 +105,12 @@ func _process(delta: float) -> void:
 	if target_timer <= 0.0:
 		# Too slow — target jumps to a new spot immediately
 		move_target()
+
+func finish_minigame() -> void:
+	active = false
+	target.hide()
+	if hits_label:
+		hits_label.text = "%d/%d — Press Exit" % [hits, max_wrenches]
 
 func _on_exit_pressed() -> void:
 	active = false

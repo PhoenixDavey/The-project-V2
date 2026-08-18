@@ -1,9 +1,10 @@
-[gd_scene load_steps=11 format=3 uid="uid://cx57um2cawr65"]
+[gd_scene load_steps=20 format=3 uid="uid://cx57um2cawr65"]
 
 [ext_resource type="Texture2D" uid="uid://bjh55vxx28vxl" path="res://Submarine for subnautifood.png" id="1_3uq8f"]
 [ext_resource type="FontFile" uid="uid://bvynfl1ilckqa" path="res://Chernobyl.otf" id="2_k4f85"]
 [ext_resource type="Script" uid="uid://mgtc2h2y3ah0" path="res://repair_ui.gd" id="3_qvldv"]
 [ext_resource type="Texture2D" uid="uid://ijm4ka2xk38s" path="res://images-removebg-preview (1).png" id="4_wxksq"]
+[ext_resource type="Texture2D" uid="uid://cneqm370qytcs" path="res://explosion-1-g/spritesheet.png" id="5_a2b0v"]
 
 [sub_resource type="GDScript" id="GDScript_3uq8f"]
 script/source = "extends CharacterBody2D
@@ -220,6 +221,63 @@ corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_c2y6f"]
+atlas = ExtResource("5_a2b0v")
+region = Rect2(0, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_a8e5i"]
+atlas = ExtResource("5_a2b0v")
+region = Rect2(48, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vve82"]
+atlas = ExtResource("5_a2b0v")
+region = Rect2(96, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_bejh6"]
+atlas = ExtResource("5_a2b0v")
+region = Rect2(144, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lct8s"]
+atlas = ExtResource("5_a2b0v")
+region = Rect2(192, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8ee1q"]
+atlas = ExtResource("5_a2b0v")
+region = Rect2(240, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lgmnj"]
+atlas = ExtResource("5_a2b0v")
+region = Rect2(288, 0, 48, 48)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_ug1i2"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_c2y6f")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_a8e5i")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_vve82")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_bejh6")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_lct8s")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8ee1q")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_lgmnj")
+}],
+"loop": true,
+"name": &"Death",
+"speed": 10.0
+}]
+
 [node name="Submarine" type="CharacterBody2D"]
 script = SubResource("GDScript_3uq8f")
 
@@ -330,5 +388,14 @@ theme_override_colors/font_hover_color = Color(0.262932, 0.262932, 0.262932, 1)
 theme_override_colors/font_color = Color(0.739789, 1.93726e-06, 9.62615e-07, 1)
 theme_override_fonts/font = ExtResource("2_k4f85")
 theme_override_font_sizes/font_size = 35
-text = "EXIT MINIGAME"
+text = "Continue Pilotting"
 flat = true
+
+[node name="Explosion" type="AnimatedSprite2D" parent="."]
+texture_filter = 1
+position = Vector2(0.5, -0.999981)
+scale = Vector2(8.5625, 7.33333)
+sprite_frames = SubResource("SpriteFrames_ug1i2")
+animation = &"Death"
+frame = 4
+frame_progress = 0.992765
