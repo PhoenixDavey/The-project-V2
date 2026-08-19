@@ -302,7 +302,7 @@ texture = SubResource("GradientTexture2D_wxksq")
 shape = SubResource("CircleShape2D_k4f85")
 
 [node name="Camera2D" type="Camera2D" parent="."]
-zoom = Vector2(0.17, 0.17)
+zoom = Vector2(0.65, 0.65)
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
@@ -380,22 +380,21 @@ texture = ExtResource("4_wxksq")
 
 [node name="ExitButton" type="Button" parent="CanvasLayer2/RepairUI"]
 layout_mode = 0
-offset_left = 479.0
-offset_top = 586.0
-offset_right = 719.0
-offset_bottom = 663.0
+offset_left = 458.0
+offset_top = 581.0
+offset_right = 768.0
+offset_bottom = 658.0
 theme_override_colors/font_hover_color = Color(0.262932, 0.262932, 0.262932, 1)
 theme_override_colors/font_color = Color(0.739789, 1.93726e-06, 9.62615e-07, 1)
 theme_override_fonts/font = ExtResource("2_k4f85")
 theme_override_font_sizes/font_size = 35
-text = "Continue Pilotting"
+text = "Continue Piloting"
 flat = true
 
 [node name="Explosion" type="AnimatedSprite2D" parent="."]
+visible = false
 texture_filter = 1
 position = Vector2(0.5, -0.999981)
 scale = Vector2(8.5625, 7.33333)
 sprite_frames = SubResource("SpriteFrames_ug1i2")
 animation = &"Death"
-frame = 4
-frame_progress = 0.992765
