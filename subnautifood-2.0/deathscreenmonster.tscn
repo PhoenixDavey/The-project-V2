@@ -1,0 +1,97 @@
+[gd_scene load_steps=5 format=3 uid="uid://dxoqfk4qx3wr"]
+
+[ext_resource type="Texture2D" uid="uid://bfc1xdrocwhq2" path="res://Sandwich monster-1.png.png" id="1_el8xy"]
+[ext_resource type="Script" uid="uid://dq13enk2ltrsb" path="res://sandwich_monsterfront.gd" id="2_kbbdy"]
+[ext_resource type="Texture2D" uid="uid://dswto5nf7wtqe" path="res://Sandwich monster-3.png (1).png" id="3_rk1td"]
+[ext_resource type="Texture2D" uid="uid://dkoeewxn6wj0u" path="res://Sandwich monster-2.png.png" id="4_nv7ed"]
+
+[node name="Node2D" type="Node2D"]
+
+[node name="SandwichMonsterfront" type="Sprite2D" parent="."]
+position = Vector2(-85, 301.5)
+texture = ExtResource("1_el8xy")
+script = ExtResource("2_kbbdy")
+
+[node name="SandwichMonster1" type="Sprite2D" parent="."]
+position = Vector2(-634, 282)
+texture = ExtResource("3_rk1td")
+
+[node name="SandwichMonster2" type="Sprite2D" parent="."]
+position = Vector2(-537, 282)
+texture = ExtResource("3_rk1td")
+
+[node name="SandwichMonster3" type="Sprite2D" parent="."]
+position = Vector2(-430, 286)
+texture = ExtResource("3_rk1td")
+
+[node name="SandwichMonster4" type="Sprite2D" parent="."]
+position = Vector2(-321, 286)
+texture = ExtResource("3_rk1td")
+
+[node name="SandwichMonster5" type="Sprite2D" parent="."]
+position = Vector2(-202, 296)
+texture = ExtResource("3_rk1td")
+
+[node name="SandwichMonster6" type="Sprite2D" parent="."]
+position = Vector2(-278, 296)
+texture = ExtResource("3_rk1td")
+
+[node name="SandwichMonster7" type="Sprite2D" parent="."]
+position = Vector2(-724, 305)
+texture = ExtResource("3_rk1td")
+
+[node name="SandwichMonster8" type="Sprite2D" parent="."]
+position = Vector2(-796, 307)
+texture = ExtResource("3_rk1td")
+
+[node name="SandwichMonster9" type="Sprite2D" parent="."]
+position = Vector2(-860, 303)
+texture = ExtResource("3_rk1td")
+
+[node name="SandwichMonster10" type="Sprite2D" parent="."]
+position = Vector2(-638, 319)
+texture = ExtResource("3_rk1td")
+
+[node name="SandwichMonster11" type="Sprite2D" parent="."]
+position = Vector2(-692, 310.5)
+texture = ExtResource("3_rk1td")
+
+[node name="SandwichMonster20" type="Sprite2D" parent="."]
+position = Vector2(-731, 272.5)
+texture = ExtResource("3_rk1td")
+
+[node name="SandwichMonster19" type="Sprite2D" parent="."]
+position = Vector2(-603, 341)
+texture = ExtResource("3_rk1td")
+
+[node name="SandwichMonster18" type="Sprite2D" parent="."]
+position = Vector2(-682, 331.5)
+texture = ExtResource("3_rk1td")
+
+[node name="SandwichMonster17" type="Sprite2D" parent="."]
+position = Vector2(-651, 354.5)
+texture = ExtResource("3_rk1td")
+
+[node name="SandwichMonster16" type="Sprite2D" parent="."]
+position = Vector2(-701, 349.5)
+texture = ExtResource("3_rk1td")
+
+[node name="SandwichMonster15" type="Sprite2D" parent="."]
+position = Vector2(-911, 382.5)
+texture = ExtResource("3_rk1td")
+
+[node name="SandwichMonster14" type="Sprite2D" parent="."]
+position = Vector2(-815, 380)
+texture = ExtResource("3_rk1td")
+
+[node name="SandwichMonster13" type="Sprite2D" parent="."]
+position = Vector2(-892, 384.5)
+texture = ExtResource("3_rk1td")
+
+[node name="SandwichMonster12" type="Sprite2D" parent="."]
+position = Vector2(-759, 382)
+texture = ExtResource("3_rk1td")
+
+[node name="SandwichMonsterback" type="Sprite2D" parent="."]
+position = Vector2(-1025, 368.5)
+texture = ExtResource("4_nv7ed")

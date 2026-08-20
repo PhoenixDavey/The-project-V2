@@ -10,10 +10,10 @@ func _ready() -> void:
 
 	# Emission
 	emitting = true
-	amount = 8
+	amount = 10
 	lifetime = 10.0
 	explosiveness = 0.0
-	randomness = 0.3
+	randomness = 0.5
 	local_coords = false
 
 	# Emission shape - small area, not a single point
@@ -42,8 +42,8 @@ func _ready() -> void:
 	orbit_velocity_max = 0.03
 
 	# Scale - grows then shrinks slightly as it dissipates
-	scale_amount_min = 0.075
-	scale_amount_max = 0.25
+	scale_amount_min = 0.1
+	scale_amount_max = 0.4
 	var scale_curve := Curve.new()
 	scale_curve.add_point(Vector2(0.0, 0.3))
 	scale_curve.add_point(Vector2(0.4, 1.0))
